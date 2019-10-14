@@ -10,7 +10,7 @@ The low level keyboard language switcher for X11
   * libpcre-dev          (or libpcre3-dev)
   * libpthread-stubs     (or libpthread-stubs0)
   * libpthread-stubs-dev (or libpthread-stubs0-dev)
-
+  * libx11-dev
 
 * For compile, run commands:
 
