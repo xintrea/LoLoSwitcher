@@ -39,7 +39,7 @@ void EventQueue::add(int type, int code, int value)
    for(int i=CODES_EVENT_LENGTH-1; i>=1; i--)
     evQueue[i]=evQueue[i-1];
 
-   // В нуливой элемент помещаются новые значения
+   // В нулевой элемент помещаются новые значения
    evQueue[0].type=type;
    evQueue[0].code=code;
    evQueue[0].value=value;
@@ -85,7 +85,7 @@ bool EventQueue::checkSequence(char *regexpCompile)
  // printf("Count=%d\n", count);
 
  if(count<=0)
-  return false; // Если ничего небыло найдено
+  return false; // Если ничего не было найдено
  else
   return true; // Что-то было найдено
 }
