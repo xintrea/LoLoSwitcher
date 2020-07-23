@@ -43,7 +43,6 @@ int KeyLayout::getActiveGroup()
 
 
 // Переключение раскладки
-// dpy - идентификатор дисплея
 // group - номер раскладки (обычно порядковый номер 
 //         в списке включенных раскладок, счет с 0
 int KeyLayout::setActiveGroup(int group) 
@@ -56,6 +55,8 @@ int KeyLayout::setActiveGroup(int group)
  XkbStateRec state[1];
  memset(state, 0, sizeof(state));
  XkbGetState(display, XkbUseCoreKbd, state);
+ 
+ return 0;
 }
 
 
@@ -66,6 +67,7 @@ int KeyLayout::getLayouts(char **names)
 {
  XkbDescRec desc[1];
  int gc;
+ 
  memset(desc, 0, sizeof(desc));
  desc->device_spec = XkbUseCoreKbd;
  XkbGetControls(display, XkbGroupsWrapMask, desc);
@@ -73,6 +75,7 @@ int KeyLayout::getLayouts(char **names)
  XGetAtomNames(display, desc->names->groups, gc = desc->ctrls->num_groups, names);
  XkbFreeControls(desc, XkbGroupsWrapMask, True);
  XkbFreeNames(desc, XkbGroupNamesMask, True);
+ 
  return gc;
 }
 
