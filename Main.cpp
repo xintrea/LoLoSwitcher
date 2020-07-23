@@ -17,6 +17,7 @@ Volgodonsk, 2011
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 #include <pthread.h>
+#include <errno.h>
 
 #include "Main.h"
 #include "Config.h"
@@ -226,6 +227,8 @@ Volgodonsk, 2011
 #define RUN_TEST_LANGUAGE_LAYOUT 5
 #define RUN_TEST_CONFIG_READ     6
 
+#define SLEEP_INTERVAL           5
+
 // Представление универсального события для клавиатуры и джойстика
 struct universal_event 
 {
@@ -246,6 +249,7 @@ int getUniversalEvents(int fd, struct universal_event *ev);
 bool checkEventFilter(char *text);
 void switchLayout(int n);
 void executeCommand(int n);
+int openInputFile(char* filename, bool permissive);
 static void *threadFunc(void *arg);
 
 // Глобальный объект с конфигурацией программы
@@ -401,13 +405,7 @@ void runTestKeyCode(void)
  strcpy(inputDeviceFileName, config.getInputDevice());
 
  // Открытие устройства ввода
- int fd=open(inputDeviceFileName, O_RDONLY);
-
- if(fd < 0) 
-  {
-   printf("Couldn't open input device %s, may be permission denied\n", inputDeviceFileName);
-   exit(1);
-  }
+ int fd=openInputFile(inputDeviceFileName, false);
 
  int eventCount=1;
 
@@ -467,7 +465,7 @@ int getUniversalEvents(int fd, struct universal_event *ev)
    struct input_event keyboard_ev[64]; 
 
    // Считываются события
-   size_t rb = read(fd, keyboard_ev, sizeof(keyboard_ev));
+   ssize_t rb = read(fd, keyboard_ev, sizeof(keyboard_ev));
 
    // Проверяется результат считывания
    if(rb < (int) sizeof(struct input_event)) 
@@ -501,7 +499,7 @@ int getUniversalEvents(int fd, struct universal_event *ev)
    struct js_event joystick_ev[64]; 
 
    // Считываются события
-   size_t rb = read(fd, joystick_ev, sizeof(joystick_ev));
+   ssize_t rb = read(fd, joystick_ev, sizeof(joystick_ev));
 
    // Проверяется результат считывания
    if(rb < (int) sizeof(struct js_event)) 
@@ -588,13 +586,7 @@ void runAsProcess(void)
  strcpy(inputDeviceFileName, config.getInputDevice());
 
  // Открытие устройства ввода
- int fd=open(inputDeviceFileName, O_RDONLY);
-
- if(fd < 0) 
-  {
-   printf("Couldn't open input device %s, may be permission denied\n", inputDeviceFileName);
-   exit(1);
-  }
+ int fd=openInputFile(inputDeviceFileName, false);
 
  // Цикл опроса устройства ввода
  while(true) 
@@ -603,6 +595,18 @@ void runAsProcess(void)
    struct universal_event ev[64];
 
    int ev_count=getUniversalEvents(fd, ev); // Считываются события
+   if (errno == ENODEV)
+    {
+      // устройство ввода отвалилось, ждём 5 секунд и пытаемся переподключиться
+      close(fd);
+      do {
+       sleep(SLEEP_INTERVAL);
+       fd=openInputFile(inputDeviceFileName, true);
+      }
+      while (fd < 0);
+
+      continue;
+    }
 
    // Перебираются события 
    for(int i = 0; i < ev_count; i++) 
@@ -712,6 +716,21 @@ void executeCommand(int n)
    exit(1);
   }
 
+}
+
+
+// Открытие устройства ввода
+int openInputFile(char* filename, bool permissive)
+{
+ int fd=open(filename, O_RDONLY);
+
+ if(!permissive && fd < 0)
+  {
+   printf("Couldn't open input device %s, may be permission denied\n", filename);
+   exit(1);
+  }
+
+ return fd;
 }
 
 
