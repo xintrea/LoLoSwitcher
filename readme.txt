@@ -11,6 +11,7 @@ The low level keyboard language switcher for X11
   * libpthread-stubs     (or libpthread-stubs0)
   * libpthread-stubs-dev (or libpthread-stubs0-dev)
   * libx11-dev
+  * build-essential
 
 * For compile, run commands:
 
