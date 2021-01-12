@@ -26,12 +26,20 @@ The low level keyboard language switcher for X11
 
 * For running switcher, run command:
 
-  /usr/sbin/loloswitcher
+  $ /usr/sbin/loloswitcher
 
-  Note! For get low level data from device file, running LoLoswitcher with
-  SUID bit. Check SUID bit with chmod command.
+  Note! For get low level data from device file, set owner for LoLoSwitcher binary
+  as root:root and set SUID bit with chmod command:
+  
+  # chown root:root /usr/sbin/loloswitcher
+  # chmod u+s /usr/sbin/loloswitcher
+  
+  Check LoLoSwitcher binary state:
+  
+  $ ls -l /usr/sbin/loloswitcher
+  -rwsr-xr-x 1 root root 39888 янв 11 13:53 /usr/sbin/loloswitcher
 
-  For autostart LoLo Switcher, write this command to Desktop Enviroment (DE)
+  For autostart LoLo Switcher, write running command to Desktop Enviroment (DE)
   autostart config area, or put this command to file ~/.xprofile
 
 
