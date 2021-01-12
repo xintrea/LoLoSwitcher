@@ -7,9 +7,10 @@
 
 #define CODES_EVENT_VARIABLE 3  // Количество чисел, кодирующих одно событие клавиатуры
 #define CODES_EVENT_LENGTH   16 // Возможное количество событий клавиатуры в буфере
-#define CODES_LAYOUT_NUMBER  10 // Возможное количество наборов событий клавиатуры для переключения раскладки
+#define CODES_LAYOUT_NUMBER  10 // Возможное количество раскладок клавиатуры
 
 #define REGEXP_COMPILE_SIZE 4096
+#define REGEXP_OVECTOR_SIZE 64
 
 #define CONFIG_DEVICE_TYPE_KEYBOARD 0
 #define CONFIG_DEVICE_TYPE_JOYSTICK 1
@@ -63,7 +64,7 @@ protected:
  int switchMethod; // Метод переключения
  REGEXPDATA eventFilter; // Первичный фильтр событий
  REGEXPDATA sequences[CODES_LAYOUT_NUMBER]; // Строки с регулярными выражениями
- CMDDATA  commands[CODES_LAYOUT_NUMBER]; // Строки с командами
+ CMDDATA commands[CODES_LAYOUT_NUMBER]; // Строки с командами
 
  // Имя файла, из которого считывается конфигурация
  char configFileName[STRING_LEN];

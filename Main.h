@@ -5,9 +5,9 @@
 
 // Версия и подверсия программы
 #define PROGRAM_VERSION    0
-#define PROGRAM_SUBVERSION 30
+#define PROGRAM_SUBVERSION 31
 
 // Длинна строк, используемых в программе
-#define STRING_LEN 255
+#define STRING_LEN 256
 
 #endif // __MAIN_H__

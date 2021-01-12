@@ -225,7 +225,14 @@ Volgodonsk, 2011
 
 // 0.30 - Основана на версии 0.29
 //      - Исправлен сегфолт, появляющийся при компиляции в gcc 9.2.x,
-//      - которого в версиях gcc 4.7.x не было
+//        которого в версиях gcc 4.7.x не было
+
+// 0.31 - Основана на версии 0.30
+//      - Расширена возможность обработки сложных RegExp
+//      - Сделано выравниванивание на границу слова для размеров массивов,
+//        содержащих строки
+//      - Доработан readme файл, сделана более подробная инструкция по
+//        установке программы
 
 
 #define RUN_MODE_UNDEFINED       0
@@ -546,8 +553,8 @@ bool checkEventFilter(char *text)
  
  // Проверка регулярного выражения EventFilter
  int count = 0;
- int ovector[30];
- count=pcre_exec( (pcre *)config.getEventFilterCompile(), NULL, text, strlen(text), 0, 0, ovector, 30);
+ int ovector[REGEXP_OVECTOR_SIZE];
+ count=pcre_exec( (pcre *)config.getEventFilterCompile(), NULL, text, strlen(text), 0, 0, ovector, REGEXP_OVECTOR_SIZE);
 
  // printf("Count=%d\n", count);
 

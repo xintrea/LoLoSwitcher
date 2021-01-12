@@ -79,8 +79,8 @@ bool EventQueue::checkSequence(char *regexpCompile)
 
  // Проверка регулярного выражения
  int count = 0;
- int ovector[30];
- count=pcre_exec( (pcre *)regexpCompile, NULL, queueSequence, strlen(queueSequence), 0, 0, ovector, 30);
+ int ovector[REGEXP_OVECTOR_SIZE];
+ count=pcre_exec( (pcre *)regexpCompile, NULL, queueSequence, strlen(queueSequence), 0, 0, ovector, REGEXP_OVECTOR_SIZE);
 
  // printf("Count=%d\n", count);
 
