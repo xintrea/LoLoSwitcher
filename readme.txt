@@ -37,7 +37,7 @@ The low level keyboard language switcher for X11
   Check LoLoSwitcher binary state:
   
   $ ls -l /usr/sbin/loloswitcher
-  -rwsr-xr-x 1 root root 39888 янв 11 13:53 /usr/sbin/loloswitcher
+  -rwsr-xr-x 1 root root 39888 Jan 11 13:53 /usr/sbin/loloswitcher
 
   For autostart LoLo Switcher, write running command to Desktop
   Enviroment (DE) autostart config area, or put this command
