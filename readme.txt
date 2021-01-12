@@ -28,8 +28,8 @@ The low level keyboard language switcher for X11
 
   $ /usr/sbin/loloswitcher
 
-  Note! For get low level data from device file, set owner for LoLoSwitcher binary
-  as root:root and set SUID bit with chmod command:
+  Note! For get low level data from device file, set owner for 
+  LoLoSwitcher binary as root:root and set SUID bit with chmod command:
   
   # chown root:root /usr/sbin/loloswitcher
   # chmod u+s /usr/sbin/loloswitcher
@@ -39,8 +39,9 @@ The low level keyboard language switcher for X11
   $ ls -l /usr/sbin/loloswitcher
   -rwsr-xr-x 1 root root 39888 янв 11 13:53 /usr/sbin/loloswitcher
 
-  For autostart LoLo Switcher, write running command to Desktop Enviroment (DE)
-  autostart config area, or put this command to file ~/.xprofile
+  For autostart LoLo Switcher, write running command to Desktop
+  Enviroment (DE) autostart config area, or put this command
+  to file ~/.xprofile
 
 
 * For get help and other option, run:
@@ -54,7 +55,12 @@ The low level keyboard language switcher for X11
 
   By default, LoLo Switcher is configured to switch two languages:
 
-  Left Shift Released - first language
-  Right Shift Released - second language
+  - First language:
+    Left Shift clear press 
+    (clear Left Shift push and released without any other keys or modifier)
+  
+  - Second language:
+    Right Shift clear press 
+    (clear Right Shift push and released without any other keys or modifier)
 
   ... and when switch languages, PC Speaker is produces short tone sound.
