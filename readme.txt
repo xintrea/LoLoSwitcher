@@ -1,4 +1,4 @@
- 
+
 LoLo Switcher v.0.x
 
 The low level keyboard language switcher for X11
@@ -30,12 +30,12 @@ The low level keyboard language switcher for X11
 
   Note! For get low level data from device file, set owner for 
   LoLoSwitcher binary file as root:root and set SUID bit with chmod command:
-  
+
   # chown root:root /usr/sbin/loloswitcher
   # chmod u+s /usr/sbin/loloswitcher
-  
+
   Check LoLoSwitcher binary file state:
-  
+
   $ ls -l /usr/sbin/loloswitcher
   -rwsr-xr-x 1 root root 39888 Jan 11 13:53 /usr/sbin/loloswitcher
 
@@ -58,7 +58,7 @@ The low level keyboard language switcher for X11
   - First language:
     Left Shift clean press 
     (clean push and release Left Shift without any other keys or modifier)
-  
+
   - Second language:
     Right Shift clean press 
     (clean push and release Right Shift without any other keys or modifier)

@@ -433,6 +433,23 @@ void runTestKeyCode(void)
    struct universal_event ev[64];
 
    int ev_count=getUniversalEvents(fd, ev); // Считываются события
+   if (errno == ENODEV)
+    {
+      printf("Device not found. Try reconnect...\n");
+
+      // Устройство ввода отвалилось, ожидание 5 секунд и попытка переподключения
+      close(fd);
+      
+      do {
+       sleep(SLEEP_INTERVAL);
+       fd=openInputFile(inputDeviceFileName, true);
+      }
+      while (fd < 0);
+
+      printf("Device reconnect success\n");
+      
+      continue;
+    }
 
    // Перебираются события 
    for(int i = 0; i < ev_count; i++) 
@@ -613,7 +630,7 @@ void runAsProcess(void)
    int ev_count=getUniversalEvents(fd, ev); // Считываются события
    if (errno == ENODEV)
     {
-      // устройство ввода отвалилось, ждём 5 секунд и пытаемся переподключиться
+      // Устройство ввода отвалилось, ожидание 5 секунд и попытка переподключения
       close(fd);
       do {
        sleep(SLEEP_INTERVAL);
