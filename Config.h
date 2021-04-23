@@ -37,7 +37,13 @@ public:
  ~Config();
 
  void init(void);
- bool readFile(char *fileName);
+ 
+ void setFileName(const char *fileName);
+ const char *getFileName();
+
+ bool readFile();
+ bool readFile(const char *fileName);
+ 
  void createStandartConfig();
  void print(void);
 
