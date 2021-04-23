@@ -54,6 +54,9 @@ public:
 
  // Методы получения значений из конфига
  char *getInputDevice();
+ int getAllowWaitDeviceConnect();
+ int getAllowDeviceReconnect();
+ int getDeviceReconnectTime();
  int getDeviceType();
  int getNumberOfLayout();
  int getSwitchMethod();
@@ -74,6 +77,9 @@ protected:
 
  // Переменные, в которых хранится конфигурация программы
  char inputDevice[STRING_LEN]; // Строка с именем устройства ввода
+ int allowWaitDeviceConnect; // Разрешено ли ожидание появления устройства при старте LLS
+ int allowDeviceReconnect; // Разрешено ли переподключение устройства в процессе работы
+ int deviceReconnectTime; // Переодичность переустановки соединения с устройством, сек
  int deviceType; // Тип устройства
  int numberOfLayout; // Количество раскладок
  int switchMethod; // Метод переключения

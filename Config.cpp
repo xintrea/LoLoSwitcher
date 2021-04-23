@@ -29,6 +29,10 @@ void Config::init(void)
   // Файл устройства клавиатуры
   sprintf(inputDevice, "");
 
+  allowWaitDeviceConnect=0;
+  allowDeviceReconnect=0;
+  deviceReconnectTime=0;
+
   // Количество языковых раскладок
   numberOfLayout=0;
 
@@ -155,6 +159,45 @@ bool Config::readFile(const char *fileName)
         if(strlen(inputDevice)==0)
         {
           printf("Detect empty value for inputDevice\n");
+          exit(1);
+        }
+      }
+
+
+      // Загрузка переменной AllowWaitDeviceConnect
+      if(strcmp(tmpline, "AllowWaitDeviceConnect")==0)
+      {
+        allowWaitDeviceConnect=atoi(tmpline2);
+
+        if(allowWaitDeviceConnect<0 || allowWaitDeviceConnect>1)
+        {
+          printf("Illegal value for AllowWaitDeviceConnect: %d\n", allowWaitDeviceConnect);
+          exit(1);
+        }
+      }
+
+
+      // Загрузка переменной AllowDeviceReconnect
+      if(strcmp(tmpline, "AllowDeviceReconnect")==0)
+      {
+        allowDeviceReconnect=atoi(tmpline2);
+
+        if(allowDeviceReconnect<0 || allowDeviceReconnect>1)
+        {
+          printf("Illegal value for AllowDeviceReconnect: %d\n", allowDeviceReconnect);
+          exit(1);
+        }
+      }
+
+
+      // Загрузка переменной DeviceReconnectTime
+      if(strcmp(tmpline, "DeviceReconnectTime")==0)
+      {
+        deviceReconnectTime=atoi(tmpline2);
+
+        if(deviceReconnectTime<0 || deviceReconnectTime>10)
+        {
+          printf("Illegal value for DeviceReconnectTime: %d\n", deviceReconnectTime);
           exit(1);
         }
       }
@@ -292,6 +335,11 @@ void Config::print(void)
   printf("-------------------\n");
 
   printf("InputDevice: %s\n", inputDevice);
+
+  printf("AllowWaitDeviceConnect: %d\n", allowWaitDeviceConnect);
+  printf("AllowDeviceReconnect: %d\n", allowDeviceReconnect);
+  printf("DeviceReconnectTime: %d\n", deviceReconnectTime);
+
   printf("DeviceType: %d\n", deviceType);
   printf("NumberOfLayout: %d\n", numberOfLayout);
   printf("SwitchMethod: %d\n", switchMethod);
@@ -369,10 +417,10 @@ void Config::printStandartConfigToFileDescriptor(FILE *uk)
     fputs("InputDevice=/dev/input/event0\n",                                          uk);
     fputs("\n",                                                                       uk);
 
-    fputs("# Waiting for device to connect at LoLo Switcher starting\n",              uk);
+    fputs("# Allow waiting for device to connect at LoLo Switcher start\n",           uk);
     fputs("# 0 - no waiting\n",                                                       uk);
     fputs("# 1 - waiting on (used for KVM-switch)\n",                                 uk);
-    fputs("WaitDeviceConnect=0\n",                                                    uk);
+    fputs("AllowWaitDeviceConnect=0\n",                                               uk);
     fputs("\n",                                                                       uk);
 
     fputs("# Allow device reconnection\n",                                            uk);
@@ -498,13 +546,30 @@ char *Config::getUserName()
 
 char *Config::getInputDevice()
 {
-  return inputDevice;
+    return inputDevice;
+}
+
+
+int Config::getAllowWaitDeviceConnect()
+{
+    return allowWaitDeviceConnect;
+}
+
+int Config::getAllowDeviceReconnect()
+{
+    return allowDeviceReconnect;
+}
+
+
+int Config::getDeviceReconnectTime()
+{
+    return deviceReconnectTime;
 }
 
 
 int Config::getDeviceType()
 {
-  return deviceType;
+    return deviceType;
 }
 
 
