@@ -28,11 +28,13 @@ The low level keyboard language switcher for X11
 
   $ /usr/sbin/loloswitcher
 
+
   Note! For get low level data from device file, set owner for 
   LoLoSwitcher binary file as root:root and set SUID bit with chmod command:
 
   # chown root:root /usr/sbin/loloswitcher
   # chmod u+s /usr/sbin/loloswitcher
+
 
   Check LoLoSwitcher binary file state:
 

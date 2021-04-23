@@ -309,6 +309,13 @@ void Config::print(void)
 }
 
 
+void Config::printStandartConfig()
+{
+  // Печать стандартного содержимого конфиг-файла в открытый файловый дескриптор
+  this->printStandartConfigToFileDescriptor(stdout);
+}
+
+
 // Метод создания стандартного конфига
 void Config::createStandartConfig()
 {
@@ -332,52 +339,8 @@ void Config::createStandartConfig()
     return;
   }
 
-
-  // Стандартный код конфига
-  fputs("# LoLo Switcher config file\n",                                            uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Config version (do not edit this parameter!)\n",                         uk);
-  fputs("ConfigVersion=1\n",                                                        uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Input device\n",                                                         uk);
-  fputs("# simple: /dev/input/event0\n",                                            uk);
-  fputs("# but recommendet set by ID: /dev/input/by-id/usb-SIGMACH1P_USB_Keykoard-event-kbd\n",               uk);
-  fputs("# for keep USB connection if keyboard moving to another USB slot or new USB device occupy eventX\n", uk);
-  fputs("InputDevice=/dev/input/event0\n",                                          uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Type of device\n",                                                       uk);
-  fputs("# 0 - keyboard\n",                                                         uk);
-  fputs("# 1 - joystick\n",                                                         uk);
-  fputs("DeviceType=0\n",                                                           uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Total number of language layout\n",                                      uk);
-  fputs("# For example:\n",                                                         uk);
-  fputs("# if you use ENG and RUS, set 2\n",                                        uk);
-  fputs("# if you use ENG, RUS and UKR, set 3\n",                                   uk);
-  fputs("NumberOfLayout=2\n",                                                       uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Language switch method\n",                                               uk);
-  fputs("# 0 - cyclic switch\n",                                                    uk);
-  fputs("# 1 - direct switch\n",                                                    uk);
-  fputs("SwitchMethod=1\n",                                                         uk);
-  fputs("\n",                                                                       uk);
-  fputs("# RegExp for primary filtering device events\n",                           uk);
-  fputs("# For classic keyboard, set value to ^1,[0-9]+,[0-9]+;$\n",                uk);
-  fputs("# and this filter enabled only KeyPress, KeyHold and KeyRelease event.\n", uk);
-  fputs("# Before research device codes (with option -t1), clear this value.\n",    uk);
-  fputs("EventFilter=^1,[0-9]+,[0-9]+;$\n",                                         uk);
-  fputs("\n",                                                                       uk);
-  fputs("# RegExp with codes for switch language layouts\n",                        uk);
-  fputs("# If you use cyclic switch method, set variable Sequence0 only.\n",        uk);
-  fputs("# If you use direct switch method, set variable SequenceX\n",              uk);
-  fputs("# for each layout (numeric from 0).\n",                                    uk);
-  fputs("Sequence0=(?<!1,29,1;|1,29,2;|1,97,1;|1,97,2;|1,56,1;|1,56,2;|1,100,1;|1,100,2;)1,42,1;1,42,0;$\n", uk);
-  fputs("Sequence1=(?<!1,29,1;|1,29,2;|1,97,1;|1,97,2;|1,56,1;|1,56,2;|1,100,1;|1,100,2;)1,54,1;1,54,0;$\n", uk);
-  fputs("\n",                                                                       uk);
-  fputs("# Bash command if language layout switched (optional).\n",                 uk);
-  fputs("# Set CommandX for each layout (numeric from 0).\n",                       uk);
-  fputs("Command0=beep -f 440 -l 25\n",                                             uk);
-  fputs("Command1=beep -f 520 -l 25\n",                                             uk);
+  // Печать стандартного содержимого конфиг-файла в открытый файловый дескриптор
+  this->printStandartConfigToFileDescriptor(uk);
 
   // Файл закрывается
   fclose(uk);
@@ -386,6 +349,82 @@ void Config::createStandartConfig()
   // Это нужно из-за того, что при запуске от sudo хозяин
   // ставится как root а не как пользователь
   chown(fileName, getuid(), getgid());
+}
+
+
+// Стандартное содержимое конфиг-файла
+void Config::printStandartConfigToFileDescriptor(FILE *uk)
+{
+    fputs("# LoLo Switcher config file\n",                                            uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Config version (do not edit this parameter!)\n",                         uk);
+    fputs("ConfigVersion=1\n",                                                        uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Input device\n",                                                         uk);
+    fputs("# simple: /dev/input/event0\n",                                            uk);
+    fputs("# but recommendet set by ID: /dev/input/by-id/usb-SIGMACH1P_USB_Keykoard-event-kbd\n",               uk);
+    fputs("# for keep USB connection if keyboard moving to another USB slot or new USB device occupy eventX\n", uk);
+    fputs("InputDevice=/dev/input/event0\n",                                          uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Waiting for device to connect at LoLo Switcher starting\n",              uk);
+    fputs("# 0 - no waiting\n",                                                       uk);
+    fputs("# 1 - waiting on (used for KVM-switch)\n",                                 uk);
+    fputs("WaitDeviceConnect=0\n",                                                    uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Allow device reconnection\n",                                            uk);
+    fputs("# 0 - disable\n",                                                          uk);
+    fputs("# 1 - enable (used for KVM-switch or bad USB cable, if you see trouble at dmesg)\n", uk);
+    fputs("AllowDeviceReconnect=1\n",                                                 uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Device reconnection time, sec\n",                                        uk);
+    fputs("# Value from 0 to 10\n",                                                   uk);
+    fputs("# If set 0, there will be high load on the system\n",                      uk);
+    fputs("DeviceReconnectTime=3\n",                                                  uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Type of device\n",                                                       uk);
+    fputs("# 0 - keyboard\n",                                                         uk);
+    fputs("# 1 - joystick\n",                                                         uk);
+    fputs("DeviceType=0\n",                                                           uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Total number of language layout\n",                                      uk);
+    fputs("# For example:\n",                                                         uk);
+    fputs("# if you use ENG and RUS, set 2\n",                                        uk);
+    fputs("# if you use ENG, RUS and UKR, set 3\n",                                   uk);
+    fputs("NumberOfLayout=2\n",                                                       uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Language switch method\n",                                               uk);
+    fputs("# 0 - cyclic switch\n",                                                    uk);
+    fputs("# 1 - direct switch\n",                                                    uk);
+    fputs("SwitchMethod=1\n",                                                         uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# RegExp for primary filtering device events\n",                           uk);
+    fputs("# For classic keyboard, set value to ^1,[0-9]+,[0-9]+;$\n",                uk);
+    fputs("# and this filter enabled only KeyPress, KeyHold and KeyRelease event.\n", uk);
+    fputs("# Before research device codes (with option -t1), clear this value.\n",    uk);
+    fputs("EventFilter=^1,[0-9]+,[0-9]+;$\n",                                         uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# RegExp with codes for switch language layouts\n",                        uk);
+    fputs("# If you use cyclic switch method, set variable Sequence0 only.\n",        uk);
+    fputs("# If you use direct switch method, set variable SequenceX\n",              uk);
+    fputs("# for each layout (numeric from 0).\n",                                    uk);
+    fputs("Sequence0=(?<!1,29,1;|1,29,2;|1,97,1;|1,97,2;|1,56,1;|1,56,2;|1,100,1;|1,100,2;)1,42,1;1,42,0;$\n", uk);
+    fputs("Sequence1=(?<!1,29,1;|1,29,2;|1,97,1;|1,97,2;|1,56,1;|1,56,2;|1,100,1;|1,100,2;)1,54,1;1,54,0;$\n", uk);
+    fputs("\n",                                                                       uk);
+
+    fputs("# Bash command if language layout switched (optional).\n",                 uk);
+    fputs("# Set CommandX for each layout (numeric from 0).\n",                       uk);
+    fputs("Command0=beep -f 440 -l 25\n",                                             uk);
+    fputs("Command1=beep -f 520 -l 25\n",                                             uk);
 }
 
 

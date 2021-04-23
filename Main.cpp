@@ -37,6 +37,7 @@ Russia, Volgodonsk, 2011
 #define RUN_TEST_KEY_CODE        4
 #define RUN_TEST_LANGUAGE_LAYOUT 5
 #define RUN_TEST_CONFIG_READ     6
+#define RUN_SHOW_STANDART_CONFIG 7
 
 #define SLEEP_INTERVAL           5
 
@@ -59,6 +60,7 @@ void runTestConfigRead(void);
 void runAsProcess(void);
 void runHelp(void);
 void runVersion(void);
+void runShowStandartConfig(void);
 int getUniversalEvents(int fd, struct universal_event *ev);
 bool checkEventFilter(char *text);
 void switchLayout(int n);
@@ -110,6 +112,13 @@ int main (int argc, char *argv[])
       if(*i=="-v" || *i=="--version")
       {
         mode=RUN_VERSION;
+        break; // Больше никакие опции на этот режим не влияют
+      }
+
+      // Если нужно показать содержимое стандартного конфига
+      if(*i=="-i")
+      {
+        mode=RUN_SHOW_STANDART_CONFIG;
         break; // Больше никакие опции на этот режим не влияют
       }
 
@@ -172,6 +181,10 @@ void run(const int mode)
 
     case RUN_VERSION:
       runVersion();
+      break;
+
+    case RUN_SHOW_STANDART_CONFIG:
+      runShowStandartConfig();
       break;
 
     case RUN_TEST_KEY_CODE:
@@ -247,6 +260,7 @@ void runHelp(void)
   printf("Usage:\n");
   printf("Without parameter - run standart LoLo Switcher as service\n");
   printf("-h or --help - show this help\n");
+  printf("-i           - show standart config file with initial settings\n");
   printf("-t1          - run event code test\n");
   printf("-t2          - run language layout test\n");
   printf("-t3          - run read config test\n");
@@ -260,6 +274,13 @@ void runVersion(void)
 {
   printf("LoLo Switcher v.%d.%d\n", PROGRAM_VERSION, PROGRAM_SUBVERSION);
   printf("\n");
+}
+
+
+// Печать содержимого стандартного конфига
+void runShowStandartConfig(void)
+{
+  config.printStandartConfig();
 }
 
 
@@ -294,7 +315,7 @@ void runTestKeyCode(void)
   while(true) 
   {
     // Массив событий
-    struct universal_event ev[64];
+    struct universal_event ev[EVENT_ARRAY_SIZE];
 
     int ev_count=getUniversalEvents(fd, ev); // Считываются события
     if (errno == ENODEV)
@@ -360,7 +381,7 @@ int getUniversalEvents(int fd, struct universal_event *ev)
   if(config.getDeviceType()==CONFIG_DEVICE_TYPE_KEYBOARD)
   {
     // Массив событий клавиатуры
-    struct input_event keyboard_ev[64]; 
+    struct input_event keyboard_ev[EVENT_ARRAY_SIZE];
 
     // Считываются события
     ssize_t rb = read(fd, keyboard_ev, sizeof(keyboard_ev));
@@ -394,7 +415,7 @@ int getUniversalEvents(int fd, struct universal_event *ev)
   if(config.getDeviceType()==CONFIG_DEVICE_TYPE_JOYSTICK)
   {
     // Массив событий джойстика
-    struct js_event joystick_ev[64]; 
+    struct js_event joystick_ev[EVENT_ARRAY_SIZE];
 
     // Считываются события
     ssize_t rb = read(fd, joystick_ev, sizeof(joystick_ev));
@@ -492,7 +513,7 @@ void runAsProcess(void)
   while(true) 
   {
     // Массив событий
-    struct universal_event ev[64];
+    struct universal_event ev[EVENT_ARRAY_SIZE];
 
     int ev_count=getUniversalEvents(fd, ev); // Считываются события
     if (errno == ENODEV)
@@ -626,7 +647,8 @@ int openInputFile(char* filename, bool permissive)
 
   if(!permissive && fd < 0)
   {
-    printf("Couldn't open input device %s, may be permission denied\n", filename);
+    printf("Couldn't open device file %s for input device\n", filename);
+    printf("The device is not connected or permission denied\n", filename);
     exit(1);
   }
 
