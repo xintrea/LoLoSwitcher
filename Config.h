@@ -5,6 +5,8 @@
 #include <pcre.h>
 
 
+#define CURRENT_CONFIG_VERSION 2 // Актуальная версия конфиг-файла
+
 #define CODES_EVENT_VARIABLE 3  // Количество чисел, кодирующих одно событие клавиатуры
 #define CODES_EVENT_LENGTH   16 // Возможное количество событий клавиатуры в буфере
 #define CODES_LAYOUT_NUMBER  10 // Возможное количество раскладок клавиатуры
@@ -75,7 +77,12 @@ protected:
     void createDirIfNotExists(char *dirName, char *userName);
     void printStandartConfigToFileDescriptor(FILE *uk);
 
+    void updateVersion(const char *fileName, const int versionFrom, const int versionTo);
+    bool readAllValues(const char *fileName);
+    bool updateValue(const char *fileName, const char *name, const char *value);
+
     // Переменные, в которых хранится конфигурация программы
+    int configVersion;
     char inputDevice[STRING_LEN]; // Строка с именем устройства ввода
     int allowWaitDeviceConnect; // Разрешено ли ожидание появления устройства при старте LLS
     int allowDeviceReconnect; // Разрешено ли переподключение устройства в процессе работы

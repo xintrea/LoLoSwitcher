@@ -313,7 +313,7 @@ void runTestKeyCode(void)
     // Чтение конфига
     readConfig();
 
-    printf("Event code test.\n");
+    printf("Event code test for device: %s\n", config.getInputDevice());
     printf("If you see typed symbols without codes, you should\n");
     printf("configure parameter InputDevice in your config.ini file.\n");
 

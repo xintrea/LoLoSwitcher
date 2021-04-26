@@ -26,6 +26,8 @@ Config::~Config()
 // Сброс переменных конфига
 void Config::init(void)
 {
+    configVersion=0;
+
     // Файл устройства клавиатуры
     sprintf(inputDevice, "");
 
@@ -87,21 +89,41 @@ bool Config::readFile()
 // Чтение указанного файла конфига
 bool Config::readFile(const char *fileName)
 {
-    init();
+    this->init();
 
+    // Определение версии конфига
+    if( !this->readAllValues(fileName) )
+    {
+        return false;
+    }
+
+    // Если конфиг устаревший, он обновляется
+    if(configVersion!=CURRENT_CONFIG_VERSION)
+    {
+        this->updateVersion(fileName, configVersion, CURRENT_CONFIG_VERSION);
+
+        // Перечитывается конфиг-файл
+        if( !this->readAllValues(fileName) )
+        {
+            return false;
+        }
+    }
+
+    // Запоминается имя файла
+    sprintf(configFileName, fileName);
+
+    return true;
+}
+
+
+bool Config::readAllValues(const char *fileName)
+{
     // Открытие файла
     FILE *uk;
     if((uk = fopen (fileName, "rt")) == NULL) // Если файл не был открыт
     {
         return false;
     }
-
-
-    // Здесь файл открыт на чтение
-
-    // Запоминается имя файла
-    sprintf(configFileName, fileName);
-
 
     // Считывается файл
     char readline[STRING_LEN];
@@ -155,6 +177,19 @@ bool Config::readFile(const char *fileName)
             printf("tmpline2: %s\n", tmpline2);
             */
 
+
+            // Загрузка переменной ConfigVersion
+            if(strcmp(tmpline, "ConfigVersion")==0)
+            {
+                configVersion=atoi(tmpline2);
+
+                if(configVersion<=0 or configVersion>CURRENT_CONFIG_VERSION)
+                {
+                    printf("Detect incorrect value for ConfigVersion\n");
+                    exit(1);
+                }
+            }
+
             // Загрузка переменной InputDevice
             if(strcmp(tmpline, "InputDevice")==0)
             {
@@ -162,7 +197,7 @@ bool Config::readFile(const char *fileName)
 
                 if(strlen(inputDevice)==0)
                 {
-                    printf("Detect empty value for inputDevice\n");
+                    printf("Detect empty value for InputDevice\n");
                     exit(1);
                 }
             }
@@ -239,7 +274,7 @@ bool Config::readFile(const char *fileName)
 
                 if(switchMethod<0 || switchMethod>1)
                 {
-                    printf("Illegal value for switchMethod: %d\n", switchMethod);
+                    printf("Illegal value for SwitchMethod: %d\n", switchMethod);
                     exit(1);
                 }
             }
@@ -291,6 +326,148 @@ bool Config::readFile(const char *fileName)
 
     return true;
 }
+
+
+// Действия над файлом конфига, которые надо произвести для обновления версии
+void Config::updateVersion(const char *fileName, const int versionFrom, const int versionTo)
+{
+    for(int v=versionFrom+1; v<=versionTo; ++v)
+    {
+        // printf("Update config file %s to version %d ...\n", fileName, v);
+
+        // Действия для обновления на версию 2
+        if(v==2)
+        {
+            // Открытие файла
+            FILE *uk;
+            if((uk = fopen (fileName, "at")) == NULL) // Если файл не был открыт
+            {
+                printf("Can not open config file %s for update to version %d\n", fileName, v);
+                return;
+            }
+
+            fputs("\n", uk);
+            fputs("# Auto append for config version 2\n", uk);
+            fputs("AllowWaitDeviceConnect=1\n", uk);
+            fputs("AllowDeviceReconnect=1\n", uk);
+            fputs("DeviceReconnectTime=3\n", uk);
+
+            fclose(uk);
+        }
+
+        // Обновление номера версии конфига в файле
+        char versionString[STRING_LEN];
+        sprintf(versionString, "%d", v);
+        this->updateValue(fileName, "ConfigVersion", versionString);
+
+        // printf("Update to version %d successfull\n", v);
+    }
+}
+
+
+// Функция обновляет значение в конфиг-файле (но не в представлении конфига в памяти)
+bool Config::updateValue(const char *fileName, const char *name, const char *value)
+{
+    char toFileName[STRING_LEN];
+    sprintf(toFileName, "%s.new", fileName);
+    unlink(toFileName);
+
+    FILE *fromFile; // Исходный файл конфига
+    FILE *toFile; // Новый файл конфига
+
+    // Открытие конфига на чтение
+    if((fromFile = fopen (fileName, "rt")) == NULL) // Если файл не был открыт
+    {
+        printf("Can not open config file %s for update value %s\n", fileName, name);
+        return false;
+    }
+
+    // Открытие нового конфига на запись
+    if((toFile = fopen (toFileName, "at")) == NULL) // Если файл не был открыт
+    {
+        printf("Can not open config file %s for update value %s\n", fileName, name);
+        return false;
+    }
+
+    // Считывается исходный файл
+    char readLine[STRING_LEN];
+    char tmpLine[STRING_LEN];
+    char tmpLine2[STRING_LEN];
+    char resultLine[STRING_LEN];
+    bool remflag,eqflag;
+
+    // Чтение исходного файла по строкам
+    while(!feof(fromFile))
+    {
+        // Обнуление строки
+        readLine[0]='\0';
+
+        // Чтение строки
+        fgets(readLine, STRING_LEN-1, fromFile);
+
+        // Для безопасности последующей работы со считанными строками
+        readLine[STRING_LEN-1]=0;
+
+        // Убираются ведущие и концевые пробелы
+        alltrim(readLine);
+
+        // Проверка, не является ли строка комментарием
+        remflag=false;
+        if(readLine[0]=='#')
+        {
+            remflag=true;
+        }
+
+        // Поиск символа равенства
+        eqflag=false;
+        if(strchr(readLine, '=')!=NULL)
+        {
+            eqflag=true;
+        }
+
+        // Если строка содержит присвоение и не является комментарием
+        if(eqflag==true && remflag!=true)
+        {
+            // Получение имени параметра
+            strcpy(tmpLine, readLine);
+            getparamname(tmpLine);
+
+            // Получение значения параметра
+            strcpy(tmpLine2, readLine);
+            getparamvalue(tmpLine2);
+
+            // Если параметр является заменяемым
+            if(strcmp(tmpLine, name)==0)
+            {
+                sprintf(resultLine, "%s=%s\n", name, value); // Параметр заменяется
+            }
+            else
+            {
+                sprintf(resultLine, "%s\n", readLine); // Параметр печатается как есть
+            }
+        }
+        else
+        {
+            sprintf(resultLine, "%s\n", readLine); // Строка выводится без изменений
+        }
+
+        fputs(resultLine, toFile);
+    }
+
+    fclose(fromFile);
+    fclose(toFile);
+
+    unlink(fileName);
+    rename(toFileName, fileName);
+
+    // Устанавливается правильный хозяин файла
+    // Это нужно из-за того, что при запуске от sudo хозяин
+    // ставится как root а не как пользователь
+    chown(fileName, getuid(), getgid());
+
+    return true;
+}
+
 
 // Компилирование регулярного выражения во внутреннее представление
 void Config::regexpCompiling(char *regexpText, char *regexpCompileData)
@@ -417,7 +594,7 @@ void Config::printStandartConfigToFileDescriptor(FILE *uk)
     fputs("\n",                                                                       uk);
 
     fputs("# Config version (do not edit this parameter!)\n",                         uk);
-    fputs("ConfigVersion=1\n",                                                        uk);
+    fputs("ConfigVersion=2\n",                                                        uk);
     fputs("\n",                                                                       uk);
 
     fputs("# Input device\n",                                                         uk);
@@ -435,7 +612,9 @@ void Config::printStandartConfigToFileDescriptor(FILE *uk)
 
     fputs("# Allow device reconnection\n",                                            uk);
     fputs("# 0 - disable\n",                                                          uk);
-    fputs("# 1 - enable (used for KVM-switch or bad USB cable, if you see trouble at dmesg)\n", uk);
+    fputs("# 1 - enable (strong recommendet for KVM-switch)",                         uk);
+    fputs("Note: if you have bad USB cable (or very long nonstandart USB-cable)",     uk);
+    fputs("and you see trouble at dmesg, set this option to enable\n",                uk);
     fputs("AllowDeviceReconnect=1\n",                                                 uk);
     fputs("\n",                                                                       uk);
 
