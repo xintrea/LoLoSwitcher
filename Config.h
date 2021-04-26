@@ -23,72 +23,72 @@
 
 struct REGEXPDATA
 {
-  char regexp[STRING_LEN]; // Текст регулярного выражения
-  char regexpCompile[REGEXP_COMPILE_SIZE]; // Скомпилированный образ регулярного выражения
+    char regexp[STRING_LEN]; // Текст регулярного выражения
+    char regexpCompile[REGEXP_COMPILE_SIZE]; // Скомпилированный образ регулярного выражения
 };
 
 
 struct CMDDATA
 {
-  char cmdText[STRING_LEN]; // Текст команды
+    char cmdText[STRING_LEN]; // Текст команды
 };
 
 
 class Config
 {
 public:
- Config();
- ~Config();
+    Config();
+    ~Config();
 
- void init(void);
- 
- void setFileName(const char *fileName);
- const char *getFileName();
+    void init(void);
 
- bool readFile();
- bool readFile(const char *fileName);
- 
- void createStandartConfig();
- void print(void);
- void printStandartConfig();
+    void setFileName(const char *fileName);
+    const char *getFileName();
 
- // Методы получения значений из конфига
- char *getInputDevice();
- int getAllowWaitDeviceConnect();
- int getAllowDeviceReconnect();
- int getDeviceReconnectTime();
- int getDeviceType();
- int getNumberOfLayout();
- int getSwitchMethod();
- char *getEventFilter();
- char *getEventFilterCompile();
- char *getSequence(int n);
- char *getSequenceCompile(int n);
- char *getCommand(int n);
+    bool readFile();
+    bool readFile(const char *fileName);
 
- char *getUserDirectory();
- char *getUserName();
+    void createStandartConfig();
+    void print(void);
+    void printStandartConfig();
+
+    // Методы получения значений из конфига
+    char *getInputDevice();
+    int getAllowWaitDeviceConnect();
+    int getAllowDeviceReconnect();
+    int getDeviceReconnectTime();
+    int getDeviceType();
+    int getNumberOfLayout();
+    int getSwitchMethod();
+    char *getEventFilter();
+    char *getEventFilterCompile();
+    char *getSequence(int n);
+    char *getSequenceCompile(int n);
+    char *getCommand(int n);
+
+    char *getUserDirectory();
+    char *getUserName();
 
 protected:
 
- void regexpCompiling(char *regexpText, char *regexpCompileData);
- void createDirIfNotExists(char *dirName, char *userName);
- void printStandartConfigToFileDescriptor(FILE *uk);
+    void regexpCompiling(char *regexpText, char *regexpCompileData);
+    void createDirIfNotExists(char *dirName, char *userName);
+    void printStandartConfigToFileDescriptor(FILE *uk);
 
- // Переменные, в которых хранится конфигурация программы
- char inputDevice[STRING_LEN]; // Строка с именем устройства ввода
- int allowWaitDeviceConnect; // Разрешено ли ожидание появления устройства при старте LLS
- int allowDeviceReconnect; // Разрешено ли переподключение устройства в процессе работы
- int deviceReconnectTime; // Переодичность переустановки соединения с устройством, сек
- int deviceType; // Тип устройства
- int numberOfLayout; // Количество раскладок
- int switchMethod; // Метод переключения
- REGEXPDATA eventFilter; // Первичный фильтр событий
- REGEXPDATA sequences[CODES_LAYOUT_NUMBER]; // Строки с регулярными выражениями
- CMDDATA commands[CODES_LAYOUT_NUMBER]; // Строки с командами
+    // Переменные, в которых хранится конфигурация программы
+    char inputDevice[STRING_LEN]; // Строка с именем устройства ввода
+    int allowWaitDeviceConnect; // Разрешено ли ожидание появления устройства при старте LLS
+    int allowDeviceReconnect; // Разрешено ли переподключение устройства в процессе работы
+    int deviceReconnectTime; // Переодичность переустановки соединения с устройством, сек
+    int deviceType; // Тип устройства
+    int numberOfLayout; // Количество раскладок
+    int switchMethod; // Метод переключения
+    REGEXPDATA eventFilter; // Первичный фильтр событий
+    REGEXPDATA sequences[CODES_LAYOUT_NUMBER]; // Строки с регулярными выражениями
+    CMDDATA commands[CODES_LAYOUT_NUMBER]; // Строки с командами
 
- // Имя файла, из которого считывается конфигурация
- char configFileName[STRING_LEN];
+    // Имя файла, из которого считывается конфигурация
+    char configFileName[STRING_LEN];
 
 };
 

@@ -8,24 +8,24 @@
 class KeyLayout
 {
 public:
- KeyLayout();
- ~KeyLayout();
+    KeyLayout();
+    ~KeyLayout();
 
- void init();
+    void init();
 
- int getLayout(); // Номер текущей раскладки
- void setLayout(int n); // Установка нужной раскладки
- int getLayoutNumber(); // Общее количество раскладок
- void print();
+    int getLayout(); // Номер текущей раскладки
+    void setLayout(int n); // Установка нужной раскладки
+    int getLayoutNumber(); // Общее количество раскладок
+    void print();
 
 protected:
 
- int getActiveGroup();
- int setActiveGroup(int group);
- int getLayouts(char **names);
- void freeLayouts(char **names, int gc);
+    int getActiveGroup();
+    int setActiveGroup(int group);
+    int getLayouts(char **names);
+    void freeLayouts(char **names, int gc);
 
- Display *display;
+    Display *display;
 };
 
 #endif // _KEYLAYOUT_H_

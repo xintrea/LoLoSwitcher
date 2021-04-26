@@ -8,28 +8,28 @@
 
 struct EVENTELEMENT
 {
- int type;
- int code;
- int value;
+    int type;
+    int code;
+    int value;
 };
 
 
 class EventQueue
 {
 public:
- EventQueue();
- ~EventQueue();
+    EventQueue();
+    ~EventQueue();
 
- void init(void);
- void add(int type, int code, int value);
- void print();
+    void init(void);
+    void add(int type, int code, int value);
+    void print();
 
- bool checkSequence(char *regexpCompile);
+    bool checkSequence(char *regexpCompile);
 
 private:
 
- // Данные очереди
- EVENTELEMENT evQueue[CODES_EVENT_LENGTH];
+    // Данные очереди
+    EVENTELEMENT evQueue[CODES_EVENT_LENGTH];
 
 };
 
