@@ -23,6 +23,8 @@ Russia, Volgodonsk, 2011
 
 #include <string>
 #include <vector>
+#include <set>
+#include <iostream>
 
 #include "Main.h"
 #include "Config.h"
@@ -63,7 +65,7 @@ int getUniversalEvents(int fd, struct universal_event *ev);
 bool checkEventFilter(char *text);
 void switchLayout(int n);
 void executeCommand(int n);
-int openInputFile(char* filename, bool permissive);
+int openInputFile(char* filename, bool checkOpen);
 static void *threadFunc(void *arg);
 
 
@@ -97,8 +99,29 @@ int main (int argc, char *argv[])
         // printf("argv[0]: %s\n", argv[0]);
         // printf("argv[1]: %s\n", argv[1]);
 
+        std::set<std::string> availableOptions={
+            "-h",
+            "--help",
+            "-v",
+            "--version",
+            "-i",
+            "-t1",
+            "-t2",
+            "-t3",
+            "-c"
+        };
+
         for(auto i=args.begin(); i!=args.end(); ++i)
         {
+            // Если список допустимых опций не содержит считанную опцию
+            if( availableOptions.find(*i)==availableOptions.end() )
+            {
+                std::cout << "Incorrect command line option " << *i << "\n";
+                mode=RUN_MODE_UNDEFINED;
+                break;
+            }
+
+
             // Если нужно показать текст помощи
             if(*i=="-h" || *i=="--help")
             {
@@ -305,11 +328,23 @@ void runTestKeyCode(void)
     char inputDeviceFileName[STRING_LEN];
     strcpy(inputDeviceFileName, config.getInputDevice());
 
+    // Если ожидание первого подключения запрещено в конфиге, открытие устройства должно быть с проверкой
+    bool isCheckEnable=(config.getAllowWaitDeviceConnect()==0);
+
     // Открытие устройства ввода
-    int fd=openInputFile(inputDeviceFileName, false);
+    int fd=openInputFile(inputDeviceFileName, isCheckEnable);
+
+    // При проведении тестирования пользователь всегда оповещается о том,
+    // что устройство недоступно в случае некорректного первого открытия.
+    // Это оповещение не зависит от настроек
+    if(fd<0)
+    {
+        printf("Testing device %s not found\n", inputDeviceFileName);
+        printf("The device is not connected or permission denied\n");
+        printf("\n");
+    }
 
     int eventCount=1;
-
 
     // Цикл опроса устройства ввода
     while(true)
@@ -320,7 +355,7 @@ void runTestKeyCode(void)
         int ev_count=getUniversalEvents(fd, ev); // Считываются события
 
         // Если устройство ввода отвалилось
-        if (errno == ENODEV)
+        if (errno == ENODEV or errno == EBADF)
         {
             // Если разрешено переподключение
             if( config.getAllowDeviceReconnect()==1 )
@@ -333,7 +368,7 @@ void runTestKeyCode(void)
                 do
                 {
                     sleep( config.getDeviceReconnectTime() );
-                    fd=openInputFile(inputDeviceFileName, true);
+                    fd=openInputFile(inputDeviceFileName, false);
                 }
                 while (fd < 0);
 
@@ -519,8 +554,11 @@ void runAsProcess(void)
     char inputDeviceFileName[STRING_LEN];
     strcpy(inputDeviceFileName, config.getInputDevice());
 
+    // Если ожидание первого подключения запрещено в конфиге, открытие устройства должно быть с проверкой
+    bool isCheckEnable=(config.getAllowWaitDeviceConnect()==0);
+
     // Открытие устройства ввода
-    int fd=openInputFile(inputDeviceFileName, false);
+    int fd=openInputFile(inputDeviceFileName, isCheckEnable);
 
     // Цикл опроса устройства ввода
     while(true)
@@ -531,7 +569,7 @@ void runAsProcess(void)
         int ev_count=getUniversalEvents(fd, ev); // Считываются события
 
         // Если устройство ввода отвалилось
-        if (errno == ENODEV)
+        if (errno == ENODEV or errno == EBADF)
         {
             // Если разрешено переподключение
             if( config.getAllowDeviceReconnect()==1 )
@@ -542,7 +580,7 @@ void runAsProcess(void)
                 do
                 {
                     sleep( config.getDeviceReconnectTime() );
-                    fd=openInputFile(inputDeviceFileName, true);
+                    fd=openInputFile(inputDeviceFileName, false);
                 }
                 while (fd < 0);
 
@@ -670,14 +708,16 @@ void executeCommand(int n)
 
 
 // Открытие устройства ввода
-int openInputFile(char* filename, bool permissive)
+// filename - имя файла устройства
+// checkOpen - делать ли проверку на доступность файла устройства
+int openInputFile(char* filename, bool checkOpen)
 {
     int fd=open(filename, O_RDONLY);
 
-    if(!permissive && fd < 0)
+    if(checkOpen && fd < 0)
     {
         printf("Couldn't open device file %s for input device\n", filename);
-        printf("The device is not connected or permission denied\n", filename);
+        printf("The device is not connected or permission denied\n");
         exit(1);
     }
 
