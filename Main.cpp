@@ -318,23 +318,35 @@ void runTestKeyCode(void)
         struct universal_event ev[EVENT_ARRAY_SIZE];
 
         int ev_count=getUniversalEvents(fd, ev); // Считываются события
+
+        // Если устройство ввода отвалилось
         if (errno == ENODEV)
         {
-            // Устройство ввода отвалилось, ожидание некоторого времени и попытка переподключения
-            printf("Device not found. Try reconnect...\n");
-
-            close(fd);
-
-            do
+            // Если разрешено переподключение
+            if( config.getAllowDeviceReconnect()==1 )
             {
-                sleep( config.getDeviceReconnectTime() );
-                fd=openInputFile(inputDeviceFileName, true);
+                // Ожидание некоторого времени и попытка переподключения
+                printf("Device not found. Try reconnect...\n");
+
+                close(fd);
+
+                do
+                {
+                    sleep( config.getDeviceReconnectTime() );
+                    fd=openInputFile(inputDeviceFileName, true);
+                }
+                while (fd < 0);
+
+                printf("Device reconnect success\n");
+
+                continue;
             }
-            while (fd < 0);
-
-            printf("Device reconnect success\n");
-
-            continue;
+            else
+            {
+                // Иначе переподключение запрещено, нужно завершить программу
+                printf("Device %s not found. Exit.\n", inputDeviceFileName);
+                exit(1);
+            }
         }
 
         // Перебираются события
@@ -517,19 +529,31 @@ void runAsProcess(void)
         struct universal_event ev[EVENT_ARRAY_SIZE];
 
         int ev_count=getUniversalEvents(fd, ev); // Считываются события
+
+        // Если устройство ввода отвалилось
         if (errno == ENODEV)
         {
-            // Устройство ввода отвалилось, ожидание некоторого времени и попытка переподключения
-            close(fd);
-
-            do
+            // Если разрешено переподключение
+            if( config.getAllowDeviceReconnect()==1 )
             {
-                sleep( config.getDeviceReconnectTime() );
-                fd=openInputFile(inputDeviceFileName, true);
-            }
-            while (fd < 0);
+                // Ожидание некоторого времени и попытка переподключения
+                close(fd);
 
-            continue;
+                do
+                {
+                    sleep( config.getDeviceReconnectTime() );
+                    fd=openInputFile(inputDeviceFileName, true);
+                }
+                while (fd < 0);
+
+                continue;
+            }
+            else
+            {
+                // Иначе переподключение запрещено, нужно завершить программу
+                printf("Device %s not found. Exit.\n", inputDeviceFileName);
+                exit(1);
+            }
         }
 
         // Перебираются события
