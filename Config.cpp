@@ -429,8 +429,8 @@ void Config::printStandartConfigToFileDescriptor(FILE *uk)
 
     fputs("# Allow waiting for device to connect at LoLo Switcher start\n",           uk);
     fputs("# 0 - no waiting\n",                                                       uk);
-    fputs("# 1 - waiting on (used for KVM-switch)\n",                                 uk);
-    fputs("AllowWaitDeviceConnect=0\n",                                               uk);
+    fputs("# 1 - waiting on (strong recommendet for KVM-switch)\n",                   uk);
+    fputs("AllowWaitDeviceConnect=1\n",                                               uk);
     fputs("\n",                                                                       uk);
 
     fputs("# Allow device reconnection\n",                                            uk);

@@ -39,8 +39,6 @@ Russia, Volgodonsk, 2011
 #define RUN_TEST_CONFIG_READ     6
 #define RUN_SHOW_STANDART_CONFIG 7
 
-#define SLEEP_INTERVAL           5
-
 
 // Представление универсального события для клавиатуры и джойстика
 struct universal_event 
@@ -329,7 +327,7 @@ void runTestKeyCode(void)
 
             do
             {
-                sleep(SLEEP_INTERVAL);
+                sleep( config.getDeviceReconnectTime() );
                 fd=openInputFile(inputDeviceFileName, true);
             }
             while (fd < 0);
@@ -526,7 +524,7 @@ void runAsProcess(void)
 
             do
             {
-                sleep(SLEEP_INTERVAL);
+                sleep( config.getDeviceReconnectTime() );
                 fd=openInputFile(inputDeviceFileName, true);
             }
             while (fd < 0);
