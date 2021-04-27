@@ -43,7 +43,7 @@ Russia, Volgodonsk, 2011
 
 
 // Представление универсального события для клавиатуры и джойстика
-struct universal_event 
+struct universalEvent
 {
     int a;
     int b;
@@ -61,7 +61,7 @@ void runAsProcess(void);
 void runHelp(void);
 void runVersion(void);
 void runShowStandartConfig(void);
-int getUniversalEvents(int fd, struct universal_event *ev);
+int getUniversalEvents(int fd, struct universalEvent *ev);
 bool checkEventFilter(char *text);
 void switchLayout(int n);
 void executeCommand(int n);
@@ -318,7 +318,9 @@ void runTestKeyCode(void)
     printf("configure parameter InputDevice in your config.ini file.\n");
 
     if( strlen(config.getEventFilter()) > 0)
+    {
         printf("Note! This codes with previous filtration by EventFilter value: '%s'\n", config.getEventFilter());
+    }
 
     printf("Type CTRL+C for exit.\n");
     printf("\n");
@@ -350,9 +352,9 @@ void runTestKeyCode(void)
     while(true)
     {
         // Массив событий
-        struct universal_event ev[EVENT_ARRAY_SIZE];
+        struct universalEvent ev[EVENT_ARRAY_SIZE];
 
-        int ev_count=getUniversalEvents(fd, ev); // Считываются события
+        int readEventCount=getUniversalEvents(fd, ev); // Считываются события
 
         // Если устройство ввода отвалилось
         if (errno == ENODEV or errno == EBADF)
@@ -385,7 +387,7 @@ void runTestKeyCode(void)
         }
 
         // Перебираются события
-        for(int i = 0; i < ev_count; i++)
+        for(int i = 0; i < readEventCount; i++)
         {
             char eventText[STRING_LEN];
             sprintf(eventText, "%d,%d,%d;\n", ev[i].a, ev[i].b, ev[i].c);
@@ -422,7 +424,7 @@ void runTestKeyCode(void)
 // Считывание событий с устройства ввода
 // fd - дескриптор открытого файла устройства
 // ev - указатель на массив событий
-int getUniversalEvents(int fd, struct universal_event *ev)
+int getUniversalEvents(int fd, struct universalEvent *ev)
 {
     int ev_count;
 
@@ -473,9 +475,9 @@ int getUniversalEvents(int fd, struct universal_event *ev)
         if(rb < (int) sizeof(struct js_event))
         {
             /*
-      printf("Short input joystick device read\n");
-      exit(1);
-      */
+            printf("Short input joystick device read\n");
+            exit(1);
+            */
 
             return 0; // 0 обозначает, что никаких событий не было
         }
@@ -564,7 +566,7 @@ void runAsProcess(void)
     while(true)
     {
         // Массив событий
-        struct universal_event ev[EVENT_ARRAY_SIZE];
+        struct universalEvent ev[EVENT_ARRAY_SIZE];
 
         int ev_count=getUniversalEvents(fd, ev); // Считываются события
 
@@ -683,7 +685,9 @@ void executeCommand(int n)
 {
     // Если команда не задана
     if(strlen(config.getCommand(n))==0)
+    {
         return;
+    }
 
     size_t keyboardLayerNum=(size_t) n;
 

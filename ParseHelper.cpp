@@ -8,58 +8,60 @@
 
 
 // Функция удаляет пробелы в начале и конце принятой строки
-void alltrim(char *parseline)
+void allTrim(char *parseLine)
 {
     int i,j,k,pos=0;
 
-    if(parseline==NULL)
+    if(parseLine==NULL)
     {
         printf("Function alltrim() call with NULL parameter!\n");
         return;
     }
 
     // Определяется индекс последнего символа в строке
-    j=strlen(parseline)-1;
+    j=strlen(parseLine)-1;
 
     // Если строка пустая и нуливой длины, ее обрабатывать ненужно
     if(j<=0)
+    {
         return;
+    }
 
     // Пропуск пробелов в начале строки
-    for (i = 0; isspace(parseline[i]); i++);
+    for (i = 0; isspace(parseLine[i]); i++);
 
     // Пропуск символов переноса строк в конце строки
-    for (; ((parseline[j]=='\n') || (parseline[j]=='\r') || (parseline[j]==0)); j--);
+    for (; ((parseLine[j]=='\n') || (parseLine[j]=='\r') || (parseLine[j]==0)); j--);
 
     // Пропуск пробелов в конце строки
-    for (; isspace(parseline[j]); j--);
+    for (; isspace(parseLine[j]); j--);
 
     // Подготовка результата.
     // Такая конструкция возможна, т.к. строка может смещаться только влево
     for(k=i; k<=j; k++)
     {
-        parseline[pos++]=parseline[k];
+        parseLine[pos++]=parseLine[k];
     }
 
-    parseline[pos]=0;
+    parseLine[pos]=0;
 }
 
 
 // Функция возвращает число с нужным номером из строки где числа разделены запятыми
 // Нумерация выбираемого элемента идет с нуля
-int get_comma_separate_valuei(char *line, int n)
+int getCommaSeparateValueInt(char *line, int n)
 {
     const char *delimeters= (char *) ",";
     char *ptr;
-    char tmpline[STRING_LEN];
+    char tmpLine[STRING_LEN];
 
     // logprint("Function get_comma_separate_valuei() '%s' '%d'\n",line,n);
 
     // Переданная строка копируется в рабочую строку чтобы ее не испортила функция strtok()
-    strcpy(tmpline, line);
+    strcpy(tmpLine, line);
 
     // Взятие первого элемента
-    ptr=strtok(tmpline, delimeters);
+    ptr=strtok(tmpLine, delimeters);
 
     // Если запрошен первый элемент
     if(n==0)
@@ -101,25 +103,25 @@ int get_comma_separate_valuei(char *line, int n)
 // Функция взятия значения параметра из строки вида
 // параметр=значение
 // значение возвращается как строка
-void getparamvalue(char *parseline)
+void getParameterValue(char *parseLine)
 {
-    char tmpline[STRING_LEN];
+    char tmpLine[STRING_LEN];
     char *p;
 
-    strcpy(tmpline, parseline);
+    strcpy(tmpLine, parseLine);
 
     // Поиск позиции символа равенства
-    p=strchr(tmpline, '=');
+    p=strchr(tmpLine, '=');
 
     // Если указатель на символ равенства не равен NULL, значит символ найден
     if(p!=NULL)
     {
         p++;
-        strcpy(parseline, p); // Копирование результата в принятый массив
+        strcpy(parseLine, p); // Копирование результата в принятый массив
         return;
     }
 
-    parseline[0]=0;
+    parseLine[0]=0;
     return;
 }
 
@@ -127,18 +129,18 @@ void getparamvalue(char *parseline)
 // Функция взятия имени параметра из строки вида
 // параметр=значение
 // значение возвращается как строка
-void getparamname(char *parseline)
+void getParameterName(char *parseLine)
 {
-    for(int i=0; i<=strlen(parseline); i++)
+    for(int i=0; i<=strlen(parseLine); i++)
     {
-        if(parseline[i]=='=')
+        if(parseLine[i]=='=')
         {
-            parseline[i]=0; // На месте знака равенства устанавливается признак конца строки
+            parseLine[i]=0; // На месте знака равенства устанавливается признак конца строки
             return;
         }
     }
 
-    parseline[0]=0;
+    parseLine[0]=0;
     return;
 }
 

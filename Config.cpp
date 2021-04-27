@@ -126,50 +126,50 @@ bool Config::readAllValues(const char *fileName)
     }
 
     // Считывается файл
-    char readline[STRING_LEN];
-    char tmpline[STRING_LEN];
-    char tmpline2[STRING_LEN];
-    bool remflag,eqflag;
+    char readLine[STRING_LEN];
+    char tmpLine[STRING_LEN];
+    char tmpLine2[STRING_LEN];
+    bool remFlag, eqFlag;
 
     // Чтение файла по строкам
     while(!feof(uk))
     {
         // Обнуление строки
-        readline[0]='\0';
+        readLine[0]='\0';
 
         // Чтение строки
-        fgets(readline, STRING_LEN-1, uk);
+        fgets(readLine, STRING_LEN-1, uk);
 
         // Для безопасности последующей работы со считанными строками
-        readline[STRING_LEN-1]=0;
+        readLine[STRING_LEN-1]=0;
 
         // Убираются ведущие и концевые пробелы
-        alltrim(readline);
+        allTrim(readLine);
 
         // Проверка, не является ли строка комментарием
-        remflag=false;
-        if(readline[0]=='#')
+        remFlag=false;
+        if(readLine[0]=='#')
         {
-            remflag=true;
+            remFlag=true;
         }
 
         // Поиск символа равенства
-        eqflag=false;
-        if(strchr(readline, '=')!=NULL)
+         eqFlag=false;
+        if(strchr(readLine, '=')!=NULL)
         {
-            eqflag=true;
+             eqFlag=true;
         }
 
         // Если строка содержит присвоение и не является комментарием
-        if(eqflag==true && remflag!=true)
+        if( eqFlag==true && remFlag!=true)
         {
             // Получение имени параметра
-            strcpy(tmpline, readline);
-            getparamname(tmpline);
+            strcpy(tmpLine, readLine);
+            getParameterName(tmpLine);
 
             // Получение значения параметра
-            strcpy(tmpline2, readline);
-            getparamvalue(tmpline2);
+            strcpy(tmpLine2, readLine);
+            getParameterValue(tmpLine2);
 
             /*
             printf("readline: %s\n", readline);
@@ -179,9 +179,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной ConfigVersion
-            if(strcmp(tmpline, "ConfigVersion")==0)
+            if(strcmp(tmpLine, "ConfigVersion")==0)
             {
-                configVersion=atoi(tmpline2);
+                configVersion=atoi(tmpLine2);
 
                 if(configVersion<=0 or configVersion>CURRENT_CONFIG_VERSION)
                 {
@@ -191,9 +191,9 @@ bool Config::readAllValues(const char *fileName)
             }
 
             // Загрузка переменной InputDevice
-            if(strcmp(tmpline, "InputDevice")==0)
+            if(strcmp(tmpLine, "InputDevice")==0)
             {
-                sprintf(inputDevice, "%s", tmpline2);
+                sprintf(inputDevice, "%s", tmpLine2);
 
                 if(strlen(inputDevice)==0)
                 {
@@ -204,9 +204,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной AllowWaitDeviceConnect
-            if(strcmp(tmpline, "AllowWaitDeviceConnect")==0)
+            if(strcmp(tmpLine, "AllowWaitDeviceConnect")==0)
             {
-                allowWaitDeviceConnect=atoi(tmpline2);
+                allowWaitDeviceConnect=atoi(tmpLine2);
 
                 if(allowWaitDeviceConnect<0 || allowWaitDeviceConnect>1)
                 {
@@ -217,9 +217,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной AllowDeviceReconnect
-            if(strcmp(tmpline, "AllowDeviceReconnect")==0)
+            if(strcmp(tmpLine, "AllowDeviceReconnect")==0)
             {
-                allowDeviceReconnect=atoi(tmpline2);
+                allowDeviceReconnect=atoi(tmpLine2);
 
                 if(allowDeviceReconnect<0 || allowDeviceReconnect>1)
                 {
@@ -230,9 +230,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной DeviceReconnectTime
-            if(strcmp(tmpline, "DeviceReconnectTime")==0)
+            if(strcmp(tmpLine, "DeviceReconnectTime")==0)
             {
-                deviceReconnectTime=atoi(tmpline2);
+                deviceReconnectTime=atoi(tmpLine2);
 
                 if(deviceReconnectTime<0 || deviceReconnectTime>10)
                 {
@@ -243,9 +243,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной DeviceType
-            if(strcmp(tmpline, "DeviceType")==0)
+            if(strcmp(tmpLine, "DeviceType")==0)
             {
-                deviceType=atoi(tmpline2);
+                deviceType=atoi(tmpLine2);
 
                 if(deviceType<0 || deviceType>1)
                 {
@@ -255,9 +255,9 @@ bool Config::readAllValues(const char *fileName)
             }
 
             // Загрузка переменной NumberOfLayout
-            if(strcmp(tmpline, "NumberOfLayout")==0)
+            if(strcmp(tmpLine, "NumberOfLayout")==0)
             {
-                numberOfLayout=atoi(tmpline2);
+                numberOfLayout=atoi(tmpLine2);
 
                 if(numberOfLayout<1 || numberOfLayout>CODES_LAYOUT_NUMBER)
                 {
@@ -268,9 +268,9 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной SwitchMethod
-            if(strcmp(tmpline, "SwitchMethod")==0)
+            if(strcmp(tmpLine, "SwitchMethod")==0)
             {
-                switchMethod=atoi(tmpline2);
+                switchMethod=atoi(tmpLine2);
 
                 if(switchMethod<0 || switchMethod>1)
                 {
@@ -281,10 +281,10 @@ bool Config::readAllValues(const char *fileName)
 
 
             // Загрузка переменной EventFilter
-            if(strcmp(tmpline, "EventFilter")==0)
+            if(strcmp(tmpLine, "EventFilter")==0)
             {
                 // Запоминается текст регулярного выражения
-                sprintf(eventFilter.regexp, tmpline2);
+                sprintf(eventFilter.regexp, tmpLine2);
 
                 // Компилируется регулярное выражение
                 regexpCompiling(eventFilter.regexp, eventFilter.regexpCompile);
@@ -299,10 +299,10 @@ bool Config::readAllValues(const char *fileName)
                 sprintf(varName, "Sequence%d", n);
 
                 // Считывание переменной Sequence
-                if(strcmp(tmpline, varName)==0)
+                if(strcmp(tmpLine, varName)==0)
                 {
                     // Запоминается текст регулярного выражения
-                    sprintf(sequences[n].regexp, tmpline2);
+                    sprintf(sequences[n].regexp, tmpLine2);
 
                     // Компилируется регулярное выражение
                     regexpCompiling(sequences[n].regexp, sequences[n].regexpCompile);
@@ -313,9 +313,9 @@ bool Config::readAllValues(const char *fileName)
                 sprintf(varName, "Command%d", n);
 
                 // Считывание переменной
-                if(strcmp(tmpline, varName)==0)
+                if(strcmp(tmpLine, varName)==0)
                 {
-                    sprintf(commands[n].cmdText, tmpline2); // Запоминается текст команды
+                    sprintf(commands[n].cmdText, tmpLine2); // Запоминается текст команды
                 }
 
             } // Закрылся цикл загрузки переменных Sequence
@@ -394,7 +394,7 @@ bool Config::updateValue(const char *fileName, const char *name, const char *val
     char tmpLine[STRING_LEN];
     char tmpLine2[STRING_LEN];
     char resultLine[STRING_LEN];
-    bool remflag,eqflag;
+    bool remFlag, eqFlag;
 
     // Чтение исходного файла по строкам
     while(!feof(fromFile))
@@ -409,32 +409,32 @@ bool Config::updateValue(const char *fileName, const char *name, const char *val
         readLine[STRING_LEN-1]=0;
 
         // Убираются ведущие и концевые пробелы
-        alltrim(readLine);
+        allTrim(readLine);
 
         // Проверка, не является ли строка комментарием
-        remflag=false;
+        remFlag=false;
         if(readLine[0]=='#')
         {
-            remflag=true;
+            remFlag=true;
         }
 
         // Поиск символа равенства
-        eqflag=false;
+        eqFlag=false;
         if(strchr(readLine, '=')!=NULL)
         {
-            eqflag=true;
+            eqFlag=true;
         }
 
         // Если строка содержит присвоение и не является комментарием
-        if(eqflag==true && remflag!=true)
+        if(eqFlag==true && remFlag!=true)
         {
             // Получение имени параметра
             strcpy(tmpLine, readLine);
-            getparamname(tmpLine);
+            getParameterName(tmpLine);
 
             // Получение значения параметра
             strcpy(tmpLine2, readLine);
-            getparamvalue(tmpLine2);
+            getParameterValue(tmpLine2);
 
             // Если параметр является заменяемым
             if(strcmp(tmpLine, name)==0)
@@ -811,7 +811,9 @@ char *Config::getSequence(int n)
 char *Config::getSequenceCompile(int n)
 {
     if(n<0 or n>=CODES_LAYOUT_NUMBER)
+    {
         return NULL;
+    }
 
     return sequences[n].regexpCompile;
 }
@@ -820,7 +822,9 @@ char *Config::getSequenceCompile(int n)
 char *Config::getCommand(int n)
 {
     if(n<0 or n>=CODES_LAYOUT_NUMBER)
+    {
         return NULL;
+    }
 
     return commands[n].cmdText;
 }
