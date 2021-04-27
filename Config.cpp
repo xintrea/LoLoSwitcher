@@ -605,8 +605,8 @@ void Config::printStandartConfigToFileDescriptor(FILE *uk)
     fputs("\n",                                                                       uk);
 
     fputs("# Input device\n",                                                         uk);
-    fputs("# simple: /dev/input/event0\n",                                            uk);
-    fputs("# but recommendet set by ID: /dev/input/by-id/usb-SIGMACH1P_USB_Keykoard-event-kbd\n",               uk);
+    fputs("# Example: /dev/input/event0\n",                                            uk);
+    fputs("# But recommendet set by ID: /dev/input/by-id/usb-SIGMACH1P_USB_Keykoard-event-kbd\n",               uk);
     fputs("# for keep USB connection if keyboard moving to another USB slot or new USB device occupy eventX\n", uk);
     fputs("InputDevice=/dev/input/event0\n",                                          uk);
     fputs("\n",                                                                       uk);
