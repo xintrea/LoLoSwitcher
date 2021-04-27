@@ -448,7 +448,14 @@ bool Config::updateValue(const char *fileName, const char *name, const char *val
         }
         else
         {
-            sprintf(resultLine, "%s\n", readLine); // Строка выводится без изменений
+            if(strcmp(readLine, "\n")==0)
+            {
+                sprintf(resultLine, "\n"); // Чтобы не выводилось два переноса если строка пустая
+            }
+            else
+            {
+                sprintf(resultLine, "%s\n", readLine); // Строка выводится без изменений
+            }
         }
 
         fputs(resultLine, toFile);

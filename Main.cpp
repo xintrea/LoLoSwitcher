@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
             "--help",
             "-v",
             "--version",
-            "-i",
+            "-p",
             "-t1",
             "-t2",
             "-t3",
@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
             }
 
             // Если нужно показать содержимое стандартного конфига
-            if(*i=="-i")
+            if(*i=="-p")
             {
                 mode=RUN_SHOW_STANDART_CONFIG;
                 break; // Больше никакие опции на этот режим не влияют
@@ -283,7 +283,7 @@ void runHelp(void)
     printf("Usage:\n");
     printf("Without parameter - run standart LoLo Switcher as service\n");
     printf("-h or --help - show this help\n");
-    printf("-i           - show standart config file with initial settings\n");
+    printf("-p           - show standart config file with initial settings\n");
     printf("-t1          - run event code test\n");
     printf("-t2          - run language layout test\n");
     printf("-t3          - run read config test\n");
