@@ -177,7 +177,7 @@ int main (int argc, char *argv[])
     // Если режим работы программы не был определен
     if(mode==RUN_MODE_UNDEFINED)
     {
-        printf("Error program parameters\n");
+        std::cout << "Error program parameters" << std::endl;
         return 1;
     }
 
@@ -221,7 +221,7 @@ void run(const int mode)
             break;
 
         default:
-            printf("Unavailable program mode\n");
+            std::cout << "Unavailable program mode" << std::endl;
     }
 }
 
@@ -267,7 +267,7 @@ void readConfig(void)
     // Если никаким способом не удалось считать конфиг
     if(!configReadResult)
     {
-        printf("Config file can not be read.\n");
+        std::cout << "Config file can not be read." << std::endl;
         exit(1);
     }
 
@@ -280,23 +280,23 @@ void runHelp(void)
 {
     runVersion();
 
-    printf("Usage:\n");
-    printf("Without parameter - run standart LoLo Switcher as service\n");
-    printf("-h or --help - show this help\n");
-    printf("-p           - show standart config file with initial settings\n");
-    printf("-t1          - run event code test\n");
-    printf("-t2          - run language layout test\n");
-    printf("-t3          - run read config test\n");
-    printf("-c fileName  - specifying the required config file\n");
-    printf("\n");
+    std::cout << "Usage:\n"
+        << "Without parameter - run standart LoLo Switcher as service\n"
+        << "-h or --help - show this help\n"
+        << "-p           - show standart config file with initial settings\n"
+        << "-t1          - run event code test\n"
+        << "-t2          - run language layout test\n"
+        << "-t3          - run read config test\n"
+        << "-c fileName  - specifying the required config file" 
+        << std::endl;
 }
 
 
 // Номер версии
 void runVersion(void)
 {
-    printf("LoLo Switcher v.%d.%d\n", PROGRAM_VERSION, PROGRAM_SUBVERSION);
-    printf("\n");
+    std::cout << "LoLo Switcher v." << PROGRAM_VERSION << "." 
+        << PROGRAM_SUBVERSION << "\n" << std::endl;
 }
 
 
@@ -313,17 +313,17 @@ void runTestKeyCode(void)
     // Чтение конфига
     readConfig();
 
-    printf("Event code test for device: %s\n", config.getInputDevice());
-    printf("If you see typed symbols without codes, you should\n");
-    printf("configure parameter InputDevice in your config.ini file.\n");
+    std::cout << "Event code test for device: " << config.getInputDevice() << "\n"
+        << "If you see typed symbols without codes, you should\n"
+        << "configure parameter InputDevice in your config.ini file." << std::endl;
 
     if( strlen(config.getEventFilter()) > 0)
     {
-        printf("Note! This codes with previous filtration by EventFilter value: '%s'\n", config.getEventFilter());
+        std::cout << "Note! This codes with previous filtration by EventFilter value: '" 
+            << config.getEventFilter() << "'" << std::endl;
     }
 
-    printf("Type CTRL+C for exit.\n");
-    printf("\n");
+    std::cout << "Type CTRL+C for exit.\n" << std::endl;
 
 
     // Имя файла устройства ввода
@@ -341,9 +341,8 @@ void runTestKeyCode(void)
     // Это оповещение не зависит от настроек
     if(fd<0)
     {
-        printf("Testing device %s not found\n", inputDeviceFileName);
-        printf("The device is not connected or permission denied\n");
-        printf("\n");
+        std::cout  << "Testing device " << inputDeviceFileName << " not found\n"
+            << "The device is not connected or permission denied\n" << std::endl;
     }
 
     int eventCount=1;
@@ -363,7 +362,7 @@ void runTestKeyCode(void)
             if( config.getAllowDeviceReconnect()==1 )
             {
                 // Ожидание некоторого времени и попытка переподключения
-                printf("Device not found. Try reconnect...\n");
+                std::cout << "Device not found. Try reconnect..." << std::endl;
 
                 close(fd);
 
@@ -374,14 +373,14 @@ void runTestKeyCode(void)
                 }
                 while (fd < 0);
 
-                printf("Device reconnect success\n");
+                std::cout << "Device reconnect success" << std::endl;
 
                 continue;
             }
             else
             {
                 // Иначе переподключение запрещено, нужно завершить программу
-                printf("Device %s not found. Exit.\n", inputDeviceFileName);
+                std::cout << "Device " << inputDeviceFileName << " not found. Exit." << std::endl;
                 exit(1);
             }
         }
@@ -407,9 +406,8 @@ void runTestKeyCode(void)
 
                 if(eventShow)
                 {
-                    printf("[%d]:\n", eventCount);
-                    printf("%s\n", eventText);
-                    printf("\n");
+                    std::cout << "[" << eventCount << "]:\n"
+                        << eventText << "\n" << std::endl;
 
                     eventCount++;
                 }
@@ -520,9 +518,8 @@ bool checkEventFilter(char *text)
 
 void runTestLanguageLayout(void)
 {
-    printf("Language layout test.\n");
-    printf("Layout found:\n");
-    printf("\n");
+    std::cout << "Language layout test.\n"
+        << "Layout found:\n" << std::endl;
 
     keyLayout.print();
 }
@@ -530,7 +527,7 @@ void runTestLanguageLayout(void)
 
 void runTestConfigRead(void)
 {
-    printf("Config file reading test...\n");
+    std::cout << "Config file reading test..." << std::endl;
 
     // Загрузка конфига
     // Если конфиг невозможно прочитать, произойдет завершение программы
@@ -539,7 +536,7 @@ void runTestConfigRead(void)
     // Печать конфига (конфиг во всей программе доступен как глобальный объект)
     config.print();
 
-    printf("Config file success read.\n");
+    std::cout << "Config file success read." << std::endl;
 }
 
 
@@ -591,7 +588,7 @@ void runAsProcess(void)
             else
             {
                 // Иначе переподключение запрещено, нужно завершить программу
-                printf("Device %s not found. Exit.\n", inputDeviceFileName);
+                std::cout << "Device " << inputDeviceFileName << " not found. Exit." << std::endl;
                 exit(1);
             }
         }
@@ -702,9 +699,9 @@ void executeCommand(int n)
     // int result = pthread_create(&thread, NULL, threadFunc, &keyboardLayerNum);
     int result = pthread_create(&thread, &threadAttr, threadFunc, (void*)keyboardLayerNum);
 
-    if(result != 0)
+    if(result)
     {
-        printf("Creating command thread false. Error: %d\n", result);
+        std::cout << "Creating command thread false. Error: " << result << std::endl;
         exit(1);
     }
 
@@ -720,8 +717,8 @@ int openInputFile(char* filename, bool checkOpen)
 
     if(checkOpen && fd < 0)
     {
-        printf("Couldn't open device file %s for input device\n", filename);
-        printf("The device is not connected or permission denied\n");
+        std::cout << "Couldn't open device file" << filename << "for input device\n"
+            << "The device is not connected or permission denied" << std::endl;
         exit(1);
     }
 
@@ -747,9 +744,9 @@ static void *threadFunc(void *arg)
     processPointer=popen(cmd, "r");
     accessControl.accessUp();
 
-    if( processPointer == NULL)
+    if(!processPointer)
     {
-        printf("Can't run command: %s\n", cmd);
+        std::cout << "Can't run command: " << cmd << std::endl;
     }
 
     // Ожидается завершение процесса с выполняемой командой и процесс завершается
